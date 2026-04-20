@@ -56,28 +56,21 @@
             font-weight: bold;
         }
 
-        /* 🔥 NEU: Entschuldigt Button */
-        .excuse-container {
-            margin-top: 10px;
-        }
-
-        .excuse-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid #ccc;
+        /* Toggle Buttons */
+        .toggle-btn {
+            padding: 8px 15px;
             background-color: white;
-            cursor: pointer;
-            font-size: 16px;
+            color: black;
+            border: 2px solid #ccc;
         }
 
-        .excuse-btn.active {
+        .toggle-btn.active {
             background-color: green;
             color: white;
             border: 2px solid green;
         }
 
-        .excuse-text {
+        .small-text {
             font-size: 12px;
             color: black;
         }
@@ -96,19 +89,24 @@
             return `
             <div class="name-section">
                 <h2>${name}</h2>
-                <div class="counter">Anwesend: <span id="${id}-present">0</span></div>
-                <div class="counter">Abwesend: <span id="${id}-absent">0</span></div>
 
-                <button onclick="increment('${id}-present')">Anwesend +</button>
-                <button onclick="decrement('${id}-present')">Anwesend -</button>
+                <!-- Abwesend -->
+                <div class="counter">Abwesend: <span id="${id}-absent">0</span> / 3</div>
                 <button onclick="increment('${id}-absent')">Abwesend +</button>
                 <button onclick="decrement('${id}-absent')">Abwesend -</button>
 
-                <!-- 🔥 NEU -->
-                <div class="excuse-container">
-                    <button class="excuse-btn" onclick="toggleExcuse(this)">✔</button>
-                    <div class="excuse-text">entschuldigt</div>
+                <!-- Anwesend Toggle -->
+                <div style="margin-top:10px;">
+                    <button class="toggle-btn" onclick="toggleActive(this)">✔</button>
+                    <div class="small-text">anwesend</div>
                 </div>
+
+                <!-- Entschuldigt -->
+                <div style="margin-top:10px;">
+                    <button class="toggle-btn" onclick="toggleActive(this)">✔</button>
+                    <div class="small-text">entschuldigt</div>
+                </div>
+
             </div>
             `;
         }
@@ -130,14 +128,24 @@
 
         function increment(counterId) {
             const counter = document.getElementById(counterId);
-            counter.innerText = parseInt(counter.innerText) + 1;
+            let value = parseInt(counter.innerText);
+
+            if (value < 3) {
+                counter.innerText = value + 1;
+            }
         }
 
         function decrement(counterId) {
             const counter = document.getElementById(counterId);
-            if (parseInt(counter.innerText) > 0) {
-                counter.innerText = parseInt(counter.innerText) - 1;
+            let value = parseInt(counter.innerText);
+
+            if (value > 0) {
+                counter.innerText = value - 1;
             }
+        }
+
+        function toggleActive(button) {
+            button.classList.toggle("active");
         }
 
         function resetCounters() {
@@ -147,16 +155,11 @@
                     counter.innerText = '0';
                 });
 
-                /* 🔥 NEU: auch entschuldigt zurücksetzen */
-                const excuseBtns = document.querySelectorAll(".excuse-btn");
-                excuseBtns.forEach(btn => {
+                const toggles = document.querySelectorAll(".toggle-btn");
+                toggles.forEach(btn => {
                     btn.classList.remove("active");
                 });
             }
-        }
-
-        function toggleExcuse(button) {
-            button.classList.toggle("active");
         }
     </script>
 
