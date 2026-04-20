@@ -4,26 +4,24 @@
     <meta charset="UTF-8">
     <title>Axxin Clan Anwesenheit</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; }
-        h1 { text-align: center; color: #333; }
-        .person { margin: 10px 0; padding: 10px; background-color: white; border: 1px solid #ddd; border-radius: 5px; }
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #fffaf0; }
+        h1 { text-align: center; color: #b30000; }
+        .person { margin: 10px 0; padding: 10px; background-color: #ffebcd; border: 1px solid #b30000; border-radius: 5px; }
         button { margin-left: 10px; }
         #control { text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
-
     <h1>Axxin Clan Anwesenheit</h1>
-    
     <div id="control">
-        <button onclick="reset('present')">Reset Anwesenheit</button>
-        <button onclick="reset('missed')">Reset Fehltage</button>
+        <button onclick="resetIndividual('present')">Reset Anwesenheit pro Person</button>
+        <button onclick="resetIndividual('missed')">Reset Fehlzeiten pro Person</button>
     </div>
 
     <div id="list"></div>
 
     <script>
-        const names = ["Ali", "Mohammed", "Ahmed", "Omar"]; // Hier die Namen definieren
+        const names = ["Ali", "Mohammed", "Ahmed", "Omar"];
 
         let data = JSON.parse(localStorage.getItem("attendance")) || {};
 
@@ -54,7 +52,7 @@
 
         function markPresent(name) {
             data[name].present++;
-            data[name].missed = 0;
+            data[name].missed = 0; // optional: Fehlzeiten zurücksetzen
             render();
         }
 
@@ -63,15 +61,19 @@
             render();
         }
 
-        function reset(type) {
-            names.forEach(name => {
+        function resetIndividual(type) {
+            const name = prompt("Für welche Person willst du zurücksetzen? (Ali, Mohammed, Ahmed, Omar)").trim();
+            if (name && data[name]) {
                 if (type === 'present') {
                     data[name].present = 0;
                 } else if (type === 'missed') {
                     data[name].missed = 0;
                 }
-            });
-            render();
+                save();
+                render();
+            } else {
+                alert("Ungültiger Name. Bitte Ali, Mohammed, Ahmed oder Omar eingeben.");
+            }
         }
 
         render();
