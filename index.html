@@ -6,7 +6,7 @@
 
 <style>
 body {
-    background: #f2f2f2;
+    background: #f5f5f5;
     font-family: Arial;
     text-align: center;
 }
@@ -16,11 +16,11 @@ h1 {
 }
 
 .top-buttons button {
-    margin: 5px;
-    padding: 10px 20px;
     background: red;
     color: gold;
     border: none;
+    padding: 10px 20px;
+    margin: 5px;
     cursor: pointer;
 }
 
@@ -39,6 +39,11 @@ h1 {
     position: relative;
 }
 
+.name-section h2 {
+    color: red;
+    cursor: pointer;
+}
+
 .delete-btn {
     position: absolute;
     top: 5px;
@@ -55,22 +60,12 @@ h1 {
 }
 
 button {
-    margin: 5px;
-    padding: 6px 12px;
-    border: none;
-    cursor: pointer;
-}
-
-/* Abwesend Buttons */
-.absent-btn {
     background: red;
-    color: white;
-}
-
-/* Anwesend Button */
-.present-btn {
-    background: #ddd;
-    color: black;
+    color: gold;
+    border: none;
+    margin: 3px;
+    padding: 6px 10px;
+    cursor: pointer;
 }
 
 .present-btn.active {
@@ -78,7 +73,6 @@ button {
     color: white;
 }
 
-/* Entschuldigt */
 .excuse-btn.active {
     background: green;
     color: white;
@@ -90,12 +84,6 @@ button {
 
 #addBtn {
     display: none;
-    background: red;
-    color: gold;
-}
-
-.edit-mode #addBtn {
-    display: inline-block;
 }
 </style>
 </head>
@@ -105,14 +93,14 @@ button {
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
 <div class="top-buttons">
-    <button onclick="resetCounters()">Reset</button>
+    <button onclick="resetAll()">Reset</button>
     <button onclick="resetPresent()">Reset Anwesend</button>
 </div>
 
 <div id="users-container"></div>
 
 <div class="bottom-buttons">
-    <button onclick="toggleEditMode()">Bearbeiten</button>
+    <button onclick="toggleEdit()">Bearbeiten</button>
     <button id="addBtn" onclick="addUser()">➕</button>
 </div>
 
@@ -128,8 +116,8 @@ function createUser(name, id) {
 
         <div>Abwesend: <span id="${id}-absent">0</span> / 3</div>
 
-        <button class="absent-btn" onclick="inc('${id}-absent')">Abwesend +</button>
-        <button class="absent-btn" onclick="dec('${id}-absent')">Abwesend -</button>
+        <button onclick="inc('${id}-absent')">Abwesend +</button>
+        <button onclick="dec('${id}-absent')">Abwesend -</button>
 
         <br>
 
@@ -142,16 +130,16 @@ function createUser(name, id) {
     `;
 }
 
-function toggleEditMode() {
+function toggleEdit() {
     editMode = !editMode;
     document.body.classList.toggle("edit-mode");
+    document.getElementById("addBtn").style.display = editMode ? "inline-block" : "none";
 }
 
 function addUser() {
-    const name = prompt("Name eingeben:");
+    let name = prompt("Name:");
     if (!name) return;
-
-    const id = "user" + Date.now();
+    let id = "user" + Date.now();
     container.innerHTML += createUser(name, id);
 }
 
@@ -163,8 +151,8 @@ function deleteUser(id) {
 
 function editName(el) {
     if (!editMode) return;
-    const newName = prompt("Neuer Name:", el.innerText);
-    if (newName) el.innerText = newName;
+    let name = prompt("Neuer Name:", el.innerText);
+    if (name) el.innerText = name;
 }
 
 function inc(id) {
@@ -185,23 +173,20 @@ function toggle(btn) {
 
 function togglePresent(btn, id) {
     btn.classList.toggle("active");
-
     if (btn.classList.contains("active")) {
         document.getElementById(id).innerText = "0";
     }
 }
 
-function resetCounters() {
+function resetAll() {
     if (confirm("Alles zurücksetzen?")) {
         document.querySelectorAll("span").forEach(s => s.innerText = "0");
-        document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".present-btn, .excuse-btn").forEach(b => b.classList.remove("active"));
     }
 }
 
 function resetPresent() {
-    document.querySelectorAll(".present-btn").forEach(b => {
-        b.classList.remove("active");
-    });
+    document.querySelectorAll(".present-btn").forEach(b => b.classList.remove("active"));
 }
 
 const users = [
