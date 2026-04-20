@@ -1,81 +1,61 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>Anwesenheits-Tracker</title>
     <style>
-        body { font-family: Arial; padding: 20px; }
+        body { font-family: Arial, sans-serif; padding: 20px; }
         h1 { text-align: center; }
         .person { margin: 10px 0; }
         button { margin-left: 10px; }
     </style>
 </head>
 <body>
+    <h1>Anwesenheits-Tracker</h1>
+    <div id="list"></div>
 
-<h1>Anwesenheits-Tracker</h1>
+    <script>
+        const names = ["Ali", "Mohammed", "Ahmed", "Omar"]; // Hier die Namen definieren
 
-<div id="list"></div>
+        let data = JSON.parse(localStorage.getItem("attendance")) || {};
 
-<script>
-    const names = ["Ali", "Mohammed", "Ahmed", "Omar"];
+        function save() {
+            localStorage.setItem("attendance", JSON.stringify(data));
+        }
 
-    let data = JSON.parse(localStorage.getItem("attendance")) || {};
+        function render() {
+            const list = document.getElementById("list");
+            list.innerHTML = "";
+            names.forEach(name => {
+                if (!data[name]) {
+                    data[name] = { present: 0, missed: 0 };
+                }
+                const div = document.createElement("div");
+                div.className = "person";
+                div.innerHTML = `
+                    <b>${name}</b>
+                    | Anwesend: ${data[name].present}
+                    | Gefehlt: ${data[name].missed}
+                    <button onclick="markPresent('${name}')">✔️</button>
+                    <button onclick="markMissed('${name}')">❌</button>
+                `;
+                list.appendChild(div);
+            });
+            save();
+        }
 
-    function save() {
-        localStorage.setItem("attendance", JSON.stringify(data));
-    }
+        function markPresent(name) {
+            data[name].present++;
+            data[name].missed = 0;
+            render();
+        }
 
-    function render() {
-        const list = document.getElementById("list");
-        list.innerHTML = "";
+        function markMissed(name) {
+            data[name].missed++;
+            render();
+        }
 
-        names.forEach(name => {
-            if (!data[name]) {
-                data[name] = { present: 0, missed: 0 };
-            }
-
-            const div = document.createElement("div");
-            div.className = "person";
-
-            div.innerHTML = 
-                <b>${name}</b>
-                | Anwesend: ${data[name].present}
-                | Gefehlt: ${data[name].missed}
-                <button onclick="markPresent('${name}')">✔️</button>
-                <button onclick="markMissed('${name}')">❌</button>
-            ;
-
-            list.appendChild(div);
-        });
-
-        save();
-    }
-
-    function markPresent(name) {
-        data[name].present++;
-        data[name].missed = 0; // reset wenn anwesend
         render();
-    }
-
-    function markMissed(name) {
-        data[name].missed++;
-        render();
-    }
-
-    render();
-</script>
-
+    </script>
 </body>
 </html>
-:heart:
-Klicken, um zu reagieren
-:white_check_mark:
-Klicken, um zu reagieren
-:fire:
-Klicken, um zu reagieren
-Reaktion hinzufügen
-Bearbeiten
-Weiterleiten
-Mehr
-
-Nachricht an @mahmoudonpc
