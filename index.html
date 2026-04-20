@@ -2,65 +2,91 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Axxin Clan Anwesenheit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axien Clan Anwesenheitsliste</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #FFD700; }
-        h1 { text-align: center; color: #8B0000; }
-        .person { margin: 10px 0; padding: 10px; background-color: #FFF8DC; border: 1px solid #8B0000; border-radius: 5px; }
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #fffaf0; }
-        h1 { text-align: center; color: #b30000; }
-        .person { margin: 10px 0; padding: 10px; background-color: #ffebcd; border: 1px solid #b30000; border-radius: 5px; }
-        button { margin-left: 10px; }
-        #control { text-align: center; margin-top: 20px; }
+        body {
+            background-color: black;
+            color: gold;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: red;
+            margin-bottom: 50px;
+        }
+        .person {
+            margin: 20px 0;
+        }
+        .buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .buttons button:hover {
+            opacity: 0.8;
+        }
+        .present {
+            color: green;
+        }
+        .absent {
+            color: red;
+        }
+        .reset {
+            background-color: red;
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <h1>Axxin Clan Anwesenheit</h1>
-    <div id="control">
-        <button onclick="resetAll()">Reset Anwesenheit pro Person</button>
+    <h1>Axien Clan Anwesenheitsliste</h1>
+
+    <div class="person" id="person1">
+        <p>Name: Max Mustermann</p>
+        <p>Anwesenheit: <span class="counter present">0</span></p>
+        <div class="buttons">
+            <button onclick="increment('person1')">Anwesend +</button>
+            <button onclick="decrement('person1')">Anwesend -</button>
+            <button onclick="absentMinus('person1')">Abwesend -</button>
+            <button onclick="absentPlus('person1')">Abwesend +</button>
+        </div>
     </div>
 
-    <div id="list"></div>
+    <!-- Weitere Personen können hier nach demselben Muster hinzugefügt werden -->
+    
+    <button class="reset" onclick="reset()">Reset</button>
 
     <script>
-        const names = ["Ali", "Mohammed", "Ahmed", "Omar"];
-
-        let data = JSON.parse(localStorage.getItem("attendance")) || {};
-
-        function save() {
-@@ -41,9 +35,8 @@
-                    <b>${name}</b>
-                    | Anwesend: ${data[name].present}
-                    | Gefehlt: ${data[name].missed}
-                    <button onclick="markPresent('${name}')">✔️</button>
-                    <button onclick="markMissed('${name}')">❌</button>
-                    <button onclick="resetSingle('${name}')">🔄</button>
-                    <button onclick="markPresent('${name}')">+ Anwesenheit</button>
-                    <button onclick="markMissed('${name}')">+ Fehlzeit</button>
-                `;
-                list.appendChild(div);
-            });
-@@ -60,24 +53,6 @@
-            render();
+        function increment(personId) {
+            let counter = document.getElementById(personId).querySelector('.counter');
+            counter.textContent = parseInt(counter.textContent) + 1;
         }
 
-        function resetSingle(name) {
-            data[name].present = 0;
-            data[name].missed = 0;
-            save();
-            render();
+        function decrement(personId) {
+            let counter = document.getElementById(personId).querySelector('.counter');
+            counter.textContent = Math.max(0, parseInt(counter.textContent) - 1);
         }
 
-        function resetAll() {
-            if (confirm("Bist du sicher, dass du alle Anwesenheiten zurücksetzen willst?")) {
-                names.forEach(name => {
-                    data[name].present = 0;
-                    data[name].missed = 0;
-                });
-                save();
-                render();
+        function absentMinus(personId) {
+            let counter = document.getElementById(personId).querySelector('.counter');
+            counter.textContent = Math.max(0, parseInt(counter.textContent) - 1);
+        }
+
+        function absentPlus(personId) {
+            let counter = document.getElementById(personId).querySelector('.counter');
+            counter.textContent = parseInt(counter.textContent) + 1;
+        }
+
+        function reset() {
+            if (confirm('Bist du sicher, dass du alles zurücksetzen willst?')) {
+                let counters = document.querySelectorAll('.counter');
+                counters.forEach(counter => counter.textContent = 0);
             }
         }
-
-        render();
     </script>
+</body>
+</html>
