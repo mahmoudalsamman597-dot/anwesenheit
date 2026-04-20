@@ -47,7 +47,7 @@
             padding: 15px;
             border: 2px solid #d4af37;
             border-radius: 10px;
-            background-color: #bde0fe;
+            background-color: white;
         }
 
         .counter {
@@ -56,7 +56,6 @@
             font-weight: bold;
         }
 
-        /* Toggle Buttons */
         .toggle-btn {
             padding: 8px 15px;
             background-color: white;
@@ -90,18 +89,15 @@
             <div class="name-section">
                 <h2>${name}</h2>
 
-                <!-- Abwesend -->
                 <div class="counter">Abwesend: <span id="${id}-absent">0</span> / 3</div>
                 <button onclick="increment('${id}-absent')">Abwesend +</button>
                 <button onclick="decrement('${id}-absent')">Abwesend -</button>
 
-                <!-- Anwesend Toggle -->
                 <div style="margin-top:10px;">
                     <button class="toggle-btn" onclick="toggleActive(this)">✔</button>
                     <div class="small-text">anwesend</div>
                 </div>
 
-                <!-- Entschuldigt -->
                 <div style="margin-top:10px;">
                     <button class="toggle-btn" onclick="toggleActive(this)">✔</button>
                     <div class="small-text">entschuldigt</div>
