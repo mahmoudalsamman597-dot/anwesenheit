@@ -37,11 +37,11 @@
         }
 
         .name-section {
-            margin: 20px;
-            padding: 20px;
+            margin: 15px;
+            padding: 15px;
             border: 2px solid goldenrod;
             display: inline-block;
-            width: 300px;
+            width: 250px;
             border-radius: 10px;
         }
 
@@ -56,21 +56,41 @@
 
     <h1>AXXEN-CLAN ANWESENHEIT</h1>
 
-    <!-- Reset jetzt DIREKT unter der Überschrift -->
     <button class="reset-btn" onclick="resetCounters()">Reset</button>
 
-    <div class="name-section">
-        <h2>Max Mustermann</h2>
-        <div class="counter">Anwesend: <span id="max-present">0</span></div>
-        <div class="counter">Abwesend: <span id="max-absent">0</span></div>
-
-        <button onclick="increment('max-present')">Anwesend +</button>
-        <button onclick="decrement('max-present')">Anwesend -</button>
-        <button onclick="increment('max-absent')">Abwesend +</button>
-        <button onclick="decrement('max-absent')">Abwesend -</button>
-    </div>
+    <div id="users-container"></div>
 
     <script>
+        function createUser(name, id) {
+            return `
+            <div class="name-section">
+                <h2>${name}</h2>
+                <div class="counter">Anwesend: <span id="${id}-present">0</span></div>
+                <div class="counter">Abwesend: <span id="${id}-absent">0</span></div>
+
+                <button onclick="increment('${id}-present')">Anwesend +</button>
+                <button onclick="decrement('${id}-present')">Anwesend -</button>
+                <button onclick="increment('${id}-absent')">Abwesend +</button>
+                <button onclick="decrement('${id}-absent')">Abwesend -</button>
+            </div>
+            `;
+        }
+
+        const users = [
+            "Bobby","Risikoloser","Mahmoud","loxy","sgfinley","memzter","chxrs",
+            "TyroTV","Bekkermann","Eyupopro","davidimglas","SpeedyHg","I0Monkey",
+            "Schnitzel","lordemea","Dupz","Ayman","Ibrahimovic","Tobi_on_drip",
+            "Onke_vali","alphaluca","Nvklas","Kaktus","Louis","Tim Tornado",
+            "Matrixx","NafSlayer","Ayman","ALPHALUCA","CptKinkot"
+        ];
+
+        const container = document.getElementById("users-container");
+
+        users.forEach((name, index) => {
+            const id = "user" + index;
+            container.innerHTML += createUser(name, id);
+        });
+
         function increment(counterId) {
             const counter = document.getElementById(counterId);
             counter.innerText = parseInt(counter.innerText) + 1;
