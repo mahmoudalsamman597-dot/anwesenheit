@@ -4,24 +4,18 @@
     <meta charset="UTF-8">
     <title>Axxin Clan Anwesenheit</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #FFD700; }
-        h1 { text-align: center; color: #8B0000; }
-        .person { margin: 10px 0; padding: 10px; background-color: #FFF8DC; border: 1px solid #8B0000; border-radius: 5px; }
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #fffaf0; }
+        h1 { text-align: center; color: #b30000; }
+        .person { margin: 10px 0; padding: 10px; background-color: #ffebcd; border: 1px solid #b30000; border-radius: 5px; }
         button { margin-left: 10px; }
-        #control { text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>Axxin Clan Anwesenheit</h1>
-    <div id="control">
-        <button onclick="resetAll()">Reset Anwesenheit pro Person</button>
-    </div>
-
     <div id="list"></div>
 
     <script>
         const names = ["Ali", "Mohammed", "Ahmed", "Omar"];
-
         let data = JSON.parse(localStorage.getItem("attendance")) || {};
 
         function save() {
@@ -41,9 +35,8 @@
                     <b>${name}</b>
                     | Anwesend: ${data[name].present}
                     | Gefehlt: ${data[name].missed}
-                    <button onclick="markPresent('${name}')">✔️</button>
-                    <button onclick="markMissed('${name}')">❌</button>
-                    <button onclick="resetSingle('${name}')">🔄</button>
+                    <button onclick="markPresent('${name}')">+ Anwesenheit</button>
+                    <button onclick="markMissed('${name}')">+ Fehlzeit</button>
                 `;
                 list.appendChild(div);
             });
@@ -58,24 +51,6 @@
         function markMissed(name) {
             data[name].missed++;
             render();
-        }
-
-        function resetSingle(name) {
-            data[name].present = 0;
-            data[name].missed = 0;
-            save();
-            render();
-        }
-
-        function resetAll() {
-            if (confirm("Bist du sicher, dass du alle Anwesenheiten zurücksetzen willst?")) {
-                names.forEach(name => {
-                    data[name].present = 0;
-                    data[name].missed = 0;
-                });
-                save();
-                render();
-            }
         }
 
         render();
