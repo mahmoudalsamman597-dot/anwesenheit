@@ -2,89 +2,73 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Axien Clan Anwesenheitsliste</title>
+    <title>AXXEN-CLAN ANWESENHEIT</title>
     <style>
         body {
-            background-color: black;
-            color: gold;
+            background-color: gold;
             font-family: Arial, sans-serif;
             text-align: center;
-            padding: 50px;
+            color: red;
         }
         h1 {
-            color: red;
-            margin-bottom: 50px;
+            margin-top: 20px;
         }
-        .person {
-            margin: 20px 0;
-        }
-        .buttons button {
+        button {
             margin: 5px;
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            background-color: red;
+            color: gold;
             cursor: pointer;
             font-weight: bold;
         }
-        .buttons button:hover {
-            opacity: 0.8;
+        .name-section {
+            margin: 20px;
+            padding: 20px;
+            border: 2px solid gold;
+            display: inline-block;
+            width: 300px;
         }
-        .present {
-            color: green;
-        }
-        .absent {
-            color: red;
-        }
-        .reset {
-            background-color: red;
-            color: white;
+        .counter {
+            margin: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Axien Clan Anwesenheitsliste</h1>
+    <h1>AXXEN-CLAN ANWESENHEIT</h1>
+    <button onclick="resetCounters()">Reset</button>
 
-    <div class="person" id="person1">
-        <p>Name: Max Mustermann</p>
-        <p>Anwesenheit: <span class="counter present">0</span></p>
-        <div class="buttons">
-            <button onclick="increment('person1')">Anwesend +</button>
-            <button onclick="decrement('person1')">Anwesend -</button>
-            <button onclick="absentMinus('person1')">Abwesend -</button>
-            <button onclick="absentPlus('person1')">Abwesend +</button>
-        </div>
+    <div class="name-section">
+        <h2>Max Mustermann</h2>
+        <div class="counter">Anwesend: <span id="max-present">0</span></div>
+        <div class="counter">Abwesend: <span id="max-absent">0</span></div>
+        <button onclick="increment('max-present')">Anwesend +</button>
+        <button onclick="decrement('max-present')">Anwesend -</button>
+        <button onclick="increment('max-absent')">Abwesend +</button>
+        <button onclick="decrement('max-absent')">Abwesend -</button>
     </div>
 
-    <!-- Weitere Personen können hier nach demselben Muster hinzugefügt werden -->
-    
-    <button class="reset" onclick="reset()">Reset</button>
+    <!-- Weitere Namen kannst du hier genauso hinzufügen -->
 
     <script>
-        function increment(personId) {
-            let counter = document.getElementById(personId).querySelector('.counter');
-            counter.textContent = parseInt(counter.textContent) + 1;
+        function increment(counterId) {
+            const counter = document.getElementById(counterId);
+            counter.innerText = parseInt(counter.innerText) + 1;
         }
 
-        function decrement(personId) {
-            let counter = document.getElementById(personId).querySelector('.counter');
-            counter.textContent = Math.max(0, parseInt(counter.textContent) - 1);
+        function decrement(counterId) {
+            const counter = document.getElementById(counterId);
+            if (parseInt(counter.innerText) > 0) {
+                counter.innerText = parseInt(counter.innerText) - 1;
+            }
         }
 
-        function absentMinus(personId) {
-            let counter = document.getElementById(personId).querySelector('.counter');
-            counter.textContent = Math.max(0, parseInt(counter.textContent) - 1);
-        }
-
-        function absentPlus(personId) {
-            let counter = document.getElementById(personId).querySelector('.counter');
-            counter.textContent = parseInt(counter.textContent) + 1;
-        }
-
-        function reset() {
-            if (confirm('Bist du sicher, dass du alles zurücksetzen willst?')) {
-                let counters = document.querySelectorAll('.counter');
-                counters.forEach(counter => counter.textContent = 0);
+        function resetCounters() {
+            if (confirm("Bist du sicher, dass du alles zurücksetzen möchtest?")) {
+                const counters = document.querySelectorAll(".counter span");
+                counters.forEach(counter => {
+                    counter.innerText = '0';
+                });
             }
         }
     </script>
