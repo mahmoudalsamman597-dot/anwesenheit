@@ -15,15 +15,22 @@ body {
 
 h1 { color: #d4af37; }
 
-.top-buttons button {
+/* 🔴 Standard Buttons */
+button {
     background: red;
     color: gold;
     border: none;
-    padding: 10px 20px;
-    margin: 5px;
+    margin: 4px;
+    padding: 8px 16px;
     cursor: pointer;
 }
 
+/* 🔴 Top Buttons */
+.top-buttons button {
+    padding: 10px 20px;
+}
+
+/* 📦 Grid */
 #users-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -31,6 +38,7 @@ h1 { color: #d4af37; }
     padding: 20px;
 }
 
+/* 📦 Box */
 .name-section {
     background: white;
     border: 2px solid #d4af37;
@@ -44,6 +52,7 @@ h1 { color: #d4af37; }
     cursor: pointer;
 }
 
+/* ❌ Delete */
 .delete-btn {
     position: absolute;
     top: 5px;
@@ -58,23 +67,22 @@ h1 { color: #d4af37; }
     display: block;
 }
 
-button {
-    background: red;
-    color: gold;
-    border: none;
-    margin: 3px;
-    padding: 6px 10px;
-    cursor: pointer;
+/* 🔴 Abwesend Buttons (NEU) */
+.absent-btn {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
 }
 
-/* 🔥 kleine transparente Buttons */
+/* 🟢 Toggle größer */
 .present-btn,
 .excuse-btn {
     background: transparent;
     color: #d4af37;
     border: 1px solid #d4af37;
-    padding: 4px 8px;
-    font-size: 12px;
+    padding: 8px 14px;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 .present-btn.active,
@@ -84,6 +92,7 @@ button {
     border: 1px solid green;
 }
 
+/* 🔽 Bottom */
 .bottom-buttons { margin: 20px; }
 #addBtn { display: none; }
 </style>
@@ -144,20 +153,19 @@ function render(){
 
             <div>Abwesend: ${u.absent} / 3</div>
 
-            <button onclick="inc(${i})">+</button>
-            <button onclick="dec(${i})">-</button>
+            <!-- 🔴 UNTEREINANDER -->
+            <button class="absent-btn" onclick="inc(${i})">Abwesend +</button>
+            <button class="absent-btn" onclick="dec(${i})">Abwesend -</button>
 
-            <br>
-
-            <!-- ✅ ANWESEND -->
-            <div style="margin-top:8px;">
-                <div style="font-size:12px; color:black;">Anwesend</div>
+            <!-- 🟢 ANWESEND -->
+            <div style="margin-top:10px;">
+                <div style="font-size:13px;">Anwesend</div>
                 <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${i})">✔</button>
             </div>
 
-            <!-- ✅ ENTSCHULDIGT -->
-            <div style="margin-top:8px;">
-                <div style="font-size:12px; color:black;">Entschuldigt</div>
+            <!-- 🟢 ENTSCHULDIGT -->
+            <div style="margin-top:10px;">
+                <div style="font-size:13px;">Entschuldigt</div>
                 <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${i})">✔</button>
             </div>
 
