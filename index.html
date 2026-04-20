@@ -6,21 +6,19 @@
 
 <style>
 body {
-    background: #f2f2f2;
+    background: #f5f5f5;
     font-family: Arial;
     text-align: center;
 }
 
-h1 {
-    color: #d4af37;
-}
+h1 { color: #d4af37; }
 
 .top-buttons button {
-    margin: 5px;
-    padding: 10px 20px;
     background: red;
     color: gold;
     border: none;
+    padding: 10px 20px;
+    margin: 5px;
     cursor: pointer;
 }
 
@@ -39,6 +37,11 @@ h1 {
     position: relative;
 }
 
+.name-section h2 {
+    color: red;
+    cursor: pointer;
+}
+
 .delete-btn {
     position: absolute;
     top: 5px;
@@ -55,30 +58,15 @@ h1 {
 }
 
 button {
-    margin: 5px;
-    padding: 6px 12px;
+    background: red;
+    color: gold;
     border: none;
+    margin: 3px;
+    padding: 6px 10px;
     cursor: pointer;
 }
 
-/* Abwesend Buttons */
-.absent-btn {
-    background: red;
-    color: white;
-}
-
-/* Anwesend Button */
-.present-btn {
-    background: #ddd;
-    color: black;
-}
-
-.present-btn.active {
-    background: green;
-    color: white;
-}
-
-/* Entschuldigt */
+.present-btn.active,
 .excuse-btn.active {
     background: green;
     color: white;
@@ -90,12 +78,6 @@ button {
 
 #addBtn {
     display: none;
-    background: red;
-    color: gold;
-}
-
-.edit-mode #addBtn {
-    display: inline-block;
 }
 </style>
 </head>
@@ -105,118 +87,140 @@ button {
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
 <div class="top-buttons">
-    <button onclick="resetCounters()">Reset</button>
+    <button onclick="resetAll()">Reset</button>
     <button onclick="resetPresent()">Reset Anwesend</button>
 </div>
 
 <div id="users-container"></div>
 
 <div class="bottom-buttons">
-    <button onclick="toggleEditMode()">Bearbeiten</button>
+    <button onclick="toggleEdit()">Bearbeiten</button>
     <button id="addBtn" onclick="addUser()">➕</button>
 </div>
 
 <script>
 let editMode = false;
 
-function createUser(name, id) {
-    return `
-    <div class="name-section" id="${id}">
-        <button class="delete-btn" onclick="deleteUser('${id}')">❌</button>
-
-        <h2 onclick="editName(this)">${name}</h2>
-
-        <div>Abwesend: <span id="${id}-absent">0</span> / 3</div>
-
-        <button class="absent-btn" onclick="inc('${id}-absent')">Abwesend +</button>
-        <button class="absent-btn" onclick="dec('${id}-absent')">Abwesend -</button>
-
-        <br>
-
-        <button class="present-btn" onclick="togglePresent(this,'${id}-absent')">✔ anwesend</button>
-
-        <br>
-
-        <button class="excuse-btn" onclick="toggle(this)">✔ entschuldigt</button>
-    </div>
-    `;
-}
-
-function toggleEditMode() {
-    editMode = !editMode;
-    document.body.classList.toggle("edit-mode");
-}
-
-function addUser() {
-    const name = prompt("Name eingeben:");
-    if (!name) return;
-
-    const id = "user" + Date.now();
-    container.innerHTML += createUser(name, id);
-}
-
-function deleteUser(id) {
-    if (confirm("Wirklich löschen?")) {
-        document.getElementById(id).remove();
-    }
-}
-
-function editName(el) {
-    if (!editMode) return;
-    const newName = prompt("Neuer Name:", el.innerText);
-    if (newName) el.innerText = newName;
-}
-
-function inc(id) {
-    let el = document.getElementById(id);
-    let v = parseInt(el.innerText);
-    if (v < 3) el.innerText = v + 1;
-}
-
-function dec(id) {
-    let el = document.getElementById(id);
-    let v = parseInt(el.innerText);
-    if (v > 0) el.innerText = v - 1;
-}
-
-function toggle(btn) {
-    btn.classList.toggle("active");
-}
-
-function togglePresent(btn, id) {
-    btn.classList.toggle("active");
-
-    if (btn.classList.contains("active")) {
-        document.getElementById(id).innerText = "0";
-    }
-}
-
-function resetCounters() {
-    if (confirm("Alles zurücksetzen?")) {
-        document.querySelectorAll("span").forEach(s => s.innerText = "0");
-        document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
-    }
-}
-
-function resetPresent() {
-    document.querySelectorAll(".present-btn").forEach(b => {
-        b.classList.remove("active");
-    });
-}
-
-const users = [
+let users = JSON.parse(localStorage.getItem("users")) || [
 "Bobby","Risikoloser","Mahmoud","loxy","sgfinley","memzter","chxrs",
 "TyroTV","Bekkermann","Eyupopro","davidimglas","SpeedyHg","I0Monkey",
 "Schnitzel","lordemea","Dupz","Ayman","Ibrahimovic","Tobi_on_drip",
 "Onke_vali","alphaluca","Nvklas","Kaktus","Louis","Tim Tornado",
 "Matrixx","NafSlayer","Ayman","ALPHALUCA","CptKinkot"
-];
+].map(name => ({name, absent:0, present:false, excuse:false}));
 
 const container = document.getElementById("users-container");
 
-users.forEach((name,i)=>{
-    container.innerHTML += createUser(name,"user"+i);
-});
+function save() {
+    localStorage.setItem("users", JSON.stringify(users));
+}
+
+function render() {
+    container.innerHTML = "";
+
+    users.forEach((user, i) => {
+        container.innerHTML += `
+        <div class="name-section">
+            <button class="delete-btn" onclick="deleteUser(${i})">❌</button>
+
+            <h2 onclick="editName(${i})">${user.name}</h2>
+
+            <div>Abwesend: ${user.absent} / 3</div>
+
+            <button onclick="inc(${i})">Abwesend +</button>
+            <button onclick="dec(${i})">Abwesend -</button>
+
+            <br>
+
+            <button class="present-btn ${user.present ? "active":""}" onclick="togglePresent(${i})">
+                ✔ anwesend
+            </button>
+
+            <br>
+
+            <button class="excuse-btn ${user.excuse ? "active":""}" onclick="toggleExcuse(${i})">
+                ✔ entschuldigt
+            </button>
+        </div>`;
+    });
+}
+
+function toggleEdit() {
+    editMode = !editMode;
+    document.body.classList.toggle("edit-mode");
+    document.getElementById("addBtn").style.display = editMode ? "inline-block" : "none";
+}
+
+function addUser() {
+    let name = prompt("Name:");
+    if (!name) return;
+    users.push({name, absent:0, present:false, excuse:false});
+    save();
+    render();
+}
+
+function deleteUser(i) {
+    if (confirm("Wirklich löschen?")) {
+        users.splice(i,1);
+        save();
+        render();
+    }
+}
+
+function editName(i) {
+    if (!editMode) return;
+    let name = prompt("Neuer Name:", users[i].name);
+    if (name) {
+        users[i].name = name;
+        save();
+        render();
+    }
+}
+
+function inc(i) {
+    if (users[i].absent < 3) users[i].absent++;
+    save();
+    render();
+}
+
+function dec(i) {
+    if (users[i].absent > 0) users[i].absent--;
+    save();
+    render();
+}
+
+function togglePresent(i) {
+    users[i].present = !users[i].present;
+    if (users[i].present) users[i].absent = 0;
+    save();
+    render();
+}
+
+function toggleExcuse(i) {
+    users[i].excuse = !users[i].excuse;
+    save();
+    render();
+}
+
+function resetAll() {
+    if (confirm("Alles zurücksetzen?")) {
+        users.forEach(u => {
+            u.absent = 0;
+            u.present = false;
+            u.excuse = false;
+        });
+        save();
+        render();
+    }
+}
+
+function resetPresent() {
+    users.forEach(u => u.present = false);
+    save();
+    render();
+}
+
+render();
 </script>
 
 </body>
