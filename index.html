@@ -132,25 +132,18 @@
         function increment(counterId) {
             const counter = document.getElementById(counterId);
             let value = parseInt(counter.innerText);
-
-            if (value < 3) {
-                counter.innerText = value + 1;
-            }
+            if (value < 3) counter.innerText = value + 1;
         }
 
         function decrement(counterId) {
             const counter = document.getElementById(counterId);
             let value = parseInt(counter.innerText);
-
-            if (value > 0) {
-                counter.innerText = value - 1;
-            }
+            if (value > 0) counter.innerText = value - 1;
         }
 
         function togglePresent(button, counterId) {
             button.classList.toggle("active");
 
-            // 🔥 WICHTIG: wenn anwesend gedrückt → reset Abwesend
             if (button.classList.contains("active")) {
                 document.getElementById(counterId).innerText = "0";
             }
