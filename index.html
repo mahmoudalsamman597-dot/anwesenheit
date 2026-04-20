@@ -11,6 +11,9 @@ body {
     text-align: center;
 }
 
+/* Passwort block */
+#app { display: none; }
+
 h1 { color: #d4af37; }
 
 .top-buttons button {
@@ -50,7 +53,6 @@ h1 { color: #d4af37; }
     color: white;
     border: none;
     display: none;
-    cursor: pointer;
 }
 
 .edit-mode .delete-btn {
@@ -66,23 +68,31 @@ button {
     cursor: pointer;
 }
 
+/* 🔥 NEU DESIGN */
+.present-btn,
+.excuse-btn {
+    background: transparent;
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
 .present-btn.active,
 .excuse-btn.active {
     background: green;
     color: white;
+    border: 1px solid green;
 }
 
-.bottom-buttons {
-    margin: 20px;
-}
-
-#addBtn {
-    display: none;
-}
+.bottom-buttons { margin: 20px; }
+#addBtn { display: none; }
 </style>
 </head>
 
 <body>
+
+<div id="app">
 
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
@@ -98,7 +108,18 @@ button {
     <button id="addBtn" onclick="addUser()">➕</button>
 </div>
 
+</div>
+
 <script>
+/* 🔐 PASSWORT */
+let pw = prompt("Passwort eingeben:");
+if(pw !== "AXXIN123"){
+    document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
+} else {
+    document.getElementById("app").style.display = "block";
+}
+
+/* 💾 SYSTEM */
 let editMode = false;
 
 let users = JSON.parse(localStorage.getItem("users")) || [
@@ -107,117 +128,89 @@ let users = JSON.parse(localStorage.getItem("users")) || [
 "Schnitzel","lordemea","Dupz","Ayman","Ibrahimovic","Tobi_on_drip",
 "Onke_vali","alphaluca","Nvklas","Kaktus","Louis","Tim Tornado",
 "Matrixx","NafSlayer","Ayman","ALPHALUCA","CptKinkot"
-].map(name => ({name, absent:0, present:false, excuse:false}));
+].map(n => ({name:n,absent:0,present:false,excuse:false}));
 
 const container = document.getElementById("users-container");
 
-function save() {
-    localStorage.setItem("users", JSON.stringify(users));
-}
+function save(){ localStorage.setItem("users", JSON.stringify(users)); }
 
-function render() {
-    container.innerHTML = "";
-
-    users.forEach((user, i) => {
+function render(){
+    container.innerHTML="";
+    users.forEach((u,i)=>{
         container.innerHTML += `
         <div class="name-section">
             <button class="delete-btn" onclick="deleteUser(${i})">❌</button>
 
-            <h2 onclick="editName(${i})">${user.name}</h2>
+            <h2 onclick="editName(${i})">${u.name}</h2>
 
-            <div>Abwesend: ${user.absent} / 3</div>
+            <div>Abwesend: ${u.absent} / 3</div>
 
-            <button onclick="inc(${i})">Abwesend +</button>
-            <button onclick="dec(${i})">Abwesend -</button>
-
-            <br>
-
-            <button class="present-btn ${user.present ? "active":""}" onclick="togglePresent(${i})">
-                ✔ anwesend
-            </button>
+            <button onclick="inc(${i})">+</button>
+            <button onclick="dec(${i})">-</button>
 
             <br>
 
-            <button class="excuse-btn ${user.excuse ? "active":""}" onclick="toggleExcuse(${i})">
-                ✔ entschuldigt
-            </button>
+            <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${i})">✔</button>
+
+            <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${i})">✔</button>
         </div>`;
     });
 }
 
-function toggleEdit() {
-    editMode = !editMode;
+function toggleEdit(){
+    editMode=!editMode;
     document.body.classList.toggle("edit-mode");
-    document.getElementById("addBtn").style.display = editMode ? "inline-block" : "none";
+    addBtn.style.display=editMode?"inline":"none";
 }
 
-function addUser() {
-    let name = prompt("Name:");
-    if (!name) return;
-    users.push({name, absent:0, present:false, excuse:false});
-    save();
-    render();
+function addUser(){
+    let n=prompt("Name:");
+    if(!n) return;
+    users.push({name:n,absent:0,present:false,excuse:false});
+    save(); render();
 }
 
-function deleteUser(i) {
-    if (confirm("Wirklich löschen?")) {
+function deleteUser(i){
+    if(confirm("Wirklich löschen?")){
         users.splice(i,1);
-        save();
-        render();
+        save(); render();
     }
 }
 
-function editName(i) {
-    if (!editMode) return;
-    let name = prompt("Neuer Name:", users[i].name);
-    if (name) {
-        users[i].name = name;
-        save();
-        render();
-    }
+function editName(i){
+    if(!editMode) return;
+    let n=prompt("Neuer Name:", users[i].name);
+    if(n){ users[i].name=n; save(); render(); }
 }
 
-function inc(i) {
-    if (users[i].absent < 3) users[i].absent++;
-    save();
-    render();
+function inc(i){ if(users[i].absent<3) users[i].absent++; save(); render(); }
+function dec(i){ if(users[i].absent>0) users[i].absent--; save(); render(); }
+
+function togglePresent(i){
+    users[i].present=!users[i].present;
+    if(users[i].present) users[i].absent=0;
+    save(); render();
 }
 
-function dec(i) {
-    if (users[i].absent > 0) users[i].absent--;
-    save();
-    render();
+function toggleExcuse(i){
+    users[i].excuse=!users[i].excuse;
+    save(); render();
 }
 
-function togglePresent(i) {
-    users[i].present = !users[i].present;
-    if (users[i].present) users[i].absent = 0;
-    save();
-    render();
-}
-
-function toggleExcuse(i) {
-    users[i].excuse = !users[i].excuse;
-    save();
-    render();
-}
-
-function resetAll() {
-    if (confirm("Alles zurücksetzen?")) {
-        users.forEach(u => {
-            u.absent = 0;
-            u.present = false;
-            u.excuse = false;
+function resetAll(){
+    if(confirm("Alles zurücksetzen?")){
+        users.forEach(u=>{
+            u.absent=0;
+            u.present=false;
+            u.excuse=false;
         });
-        save();
-        render();
+        save(); render();
     }
 }
 
-function resetPresent() {
-    users.forEach(u => u.present = false);
-    save();
-    render();
+function resetPresent(){
+    users.forEach(u=>u.present=false);
+    save(); render();
 }
 
 render();
