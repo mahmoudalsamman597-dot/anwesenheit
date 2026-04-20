@@ -11,7 +11,6 @@ body {
     text-align: center;
 }
 
-/* Passwort block */
 #app { display: none; }
 
 h1 { color: #d4af37; }
@@ -68,7 +67,7 @@ button {
     cursor: pointer;
 }
 
-/* 🔥 NEU DESIGN */
+/* 🔥 kleine transparente Buttons */
 .present-btn,
 .excuse-btn {
     background: transparent;
@@ -111,7 +110,7 @@ button {
 </div>
 
 <script>
-/* 🔐 PASSWORT */
+/* 🔐 Passwort */
 let pw = prompt("Passwort eingeben:");
 if(pw !== "AXXIN123"){
     document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
@@ -119,7 +118,7 @@ if(pw !== "AXXIN123"){
     document.getElementById("app").style.display = "block";
 }
 
-/* 💾 SYSTEM */
+/* 💾 Daten */
 let editMode = false;
 
 let users = JSON.parse(localStorage.getItem("users")) || [
@@ -150,9 +149,18 @@ function render(){
 
             <br>
 
-            <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${i})">✔</button>
+            <!-- ✅ ANWESEND -->
+            <div style="margin-top:8px;">
+                <div style="font-size:12px; color:black;">Anwesend</div>
+                <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${i})">✔</button>
+            </div>
 
-            <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${i})">✔</button>
+            <!-- ✅ ENTSCHULDIGT -->
+            <div style="margin-top:8px;">
+                <div style="font-size:12px; color:black;">Entschuldigt</div>
+                <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${i})">✔</button>
+            </div>
+
         </div>`;
     });
 }
