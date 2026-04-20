@@ -6,42 +6,59 @@
 
 <style>
 body {
-    background: linear-gradient(135deg, #ffffff, #f2f2f2);
+    background: #dcdcdc;
     font-family: Arial;
     text-align: center;
-    color: red;
 }
 
-h1 { color: #d4af37; }
+h1 {
+    color: #d4af37;
+}
+
+.top-buttons button {
+    background: red;
+    color: gold;
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+}
 
 #users-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
     padding: 20px;
 }
 
 .name-section {
-    position: relative;
-    padding: 15px;
+    background: #f2f2f2;
     border: 2px solid #d4af37;
     border-radius: 10px;
-    background: white;
+    padding: 15px;
 }
 
-.delete-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
+.name-section h2 {
+    color: red;
+}
+
+button {
     background: red;
-    color: white;
+    color: gold;
     border: none;
-    display: none;
+    padding: 6px 10px;
+    margin: 3px;
     cursor: pointer;
 }
 
-.edit-mode .delete-btn {
-    display: block;
+.counter {
+    font-weight: bold;
+}
+
+.toggle-btn {
+    background: white;
+    color: black;
+    border: 2px solid #ccc;
 }
 
 .toggle-btn.active {
@@ -49,19 +66,9 @@ h1 { color: #d4af37; }
     color: white;
 }
 
-button {
-    margin: 5px;
-    padding: 8px;
-    background: red;
-    color: gold;
-    border: none;
-    cursor: pointer;
+.small-text {
+    font-size: 12px;
 }
-
-.top-buttons { margin: 15px; }
-.bottom-buttons { margin: 20px; }
-
-.hidden { display: none; }
 </style>
 </head>
 
@@ -76,70 +83,52 @@ button {
 
 <div id="users-container"></div>
 
-<div class="bottom-buttons">
-    <button onclick="toggleEditMode()">Bearbeiten</button>
-    <button id="addBtn" class="hidden" onclick="addUser()">➕</button>
-</div>
-
 <script>
-let editMode = false;
-
 function createUser(name, id) {
     return `
-    <div class="name-section" id="${id}">
-        <button class="delete-btn" onclick="deleteUser('${id}')">❌</button>
+    <div class="name-section">
+        <h2>${name}</h2>
 
-        <h2 onclick="editName(this)">${name}</h2>
+        <div class="counter">Abwesend: <span id="${id}-absent">0</span> / 3</div>
 
-        <div>Abwesend: <span id="${id}-absent">0</span> / 3</div>
-        <button onclick="inc('${id}-absent')">+</button>
-        <button onclick="dec('${id}-absent')">-</button>
+        <button onclick="increment('${id}-absent')">Abwesend +</button><br>
+        <button onclick="decrement('${id}-absent')">Abwesend -</button>
 
-        <div>
+        <div style="margin-top:10px;">
             <button class="toggle-btn present-btn" onclick="togglePresent(this,'${id}-absent')">✔</button>
-            <div>anwesend</div>
+            <div class="small-text">anwesend</div>
         </div>
 
-        <div>
+        <div style="margin-top:10px;">
             <button class="toggle-btn" onclick="toggle(this)">✔</button>
-            <div>entschuldigt</div>
+            <div class="small-text">entschuldigt</div>
         </div>
-    </div>`;
+    </div>
+    `;
 }
 
-function toggleEditMode() {
-    editMode = !editMode;
-    document.body.classList.toggle("edit-mode");
-    document.getElementById("addBtn").classList.toggle("hidden");
-}
+const users = [
+"Bobby","Risikoloser","Mahmoud","loxy","sgfinley","memzter","chxrs",
+"TyroTV","Bekkermann","Eyupopro","davidimglas","SpeedyHg","I0Monkey",
+"Schnitzel","lordemea","Dupz","Ayman","Ibrahimovic","Tobi_on_drip",
+"Onke_vali","alphaluca","Nvklas","Kaktus","Louis","Tim Tornado",
+"Matrixx","NafSlayer","Ayman","ALPHALUCA","CptKinkot"
+];
 
-function addUser() {
-    const name = prompt("Name eingeben:");
-    if (!name) return;
+const container = document.getElementById("users-container");
 
-    const id = "user" + Date.now();
+users.forEach((name, index) => {
+    const id = "user" + index;
     container.innerHTML += createUser(name, id);
-}
+});
 
-function deleteUser(id) {
-    if (confirm("Wirklich löschen?")) {
-        document.getElementById(id).remove();
-    }
-}
-
-function editName(el) {
-    if (!editMode) return;
-    const newName = prompt("Neuer Name:", el.innerText);
-    if (newName) el.innerText = newName;
-}
-
-function inc(id) {
+function increment(id) {
     let el = document.getElementById(id);
     let v = parseInt(el.innerText);
     if (v < 3) el.innerText = v + 1;
 }
 
-function dec(id) {
+function decrement(id) {
     let el = document.getElementById(id);
     let v = parseInt(el.innerText);
     if (v > 0) el.innerText = v - 1;
@@ -151,6 +140,7 @@ function toggle(btn) {
 
 function togglePresent(btn, id) {
     btn.classList.toggle("active");
+
     if (btn.classList.contains("active")) {
         document.getElementById(id).innerText = "0";
     }
@@ -158,7 +148,7 @@ function togglePresent(btn, id) {
 
 function resetCounters() {
     if (confirm("Alles zurücksetzen?")) {
-        document.querySelectorAll("span").forEach(s => s.innerText = "0");
+        document.querySelectorAll(".counter span").forEach(c => c.innerText = "0");
         document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
     }
 }
@@ -166,13 +156,6 @@ function resetCounters() {
 function resetPresent() {
     document.querySelectorAll(".present-btn").forEach(b => b.classList.remove("active"));
 }
-
-const users = ["Bobby","Risikoloser","Mahmoud"];
-const container = document.getElementById("users-container");
-
-users.forEach((name,i)=>{
-    container.innerHTML += createUser(name,"user"+i);
-});
 </script>
 
 </body>
