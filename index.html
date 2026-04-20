@@ -26,6 +26,14 @@
             cursor: pointer;
         }
 
+        /* 🔥 NEU: GRID SYSTEM */
+        #users-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
         button {
             margin: 5px;
             padding: 8px 15px;
@@ -37,15 +45,10 @@
         }
 
         .name-section {
-            margin: 15px;
             padding: 15px;
             border: 2px solid #d4af37;
-            display: inline-block;
-            width: 250px;
             border-radius: 10px;
-
-            /* 👇 DAS IST NEU */
-            background-color: #bde0fe; /* Babyblau */
+            background-color: #bde0fe;
         }
 
         .counter {
