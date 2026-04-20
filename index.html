@@ -16,19 +16,13 @@
             color: #d4af37;
         }
 
-        .reset-btn {
-            margin: 10px 10px 20px 10px;
-            padding: 10px 25px;
-            background-color: red;
-            color: #d4af37;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
+        .top-buttons {
+            margin: 10px 0 20px 0;
         }
 
-        .reset-attendance-btn {
-            margin: 10px 10px 20px 0;
-            padding: 10px 25px;
+        .top-buttons button {
+            margin: 5px;
+            padding: 10px 20px;
             background-color: red;
             color: #d4af37;
             border: none;
@@ -89,8 +83,10 @@
 
     <h1>AXXIN CLAN ANWESENHEIT</h1>
 
-    <button class="reset-btn" onclick="resetCounters()">Reset</button>
-    <button class="reset-attendance-btn" onclick="resetAttendance()">Reset Anwesend</button>
+    <div class="top-buttons">
+        <button onclick="resetCounters()">Reset</button>
+        <button onclick="resetPresent()">Reset Anwesend</button>
+    </div>
 
     <div id="users-container"></div>
 
@@ -105,7 +101,7 @@
                 <button onclick="decrement('${id}-absent')">Abwesend -</button>
 
                 <div style="margin-top:10px;">
-                    <button class="toggle-btn" onclick="toggleActive(this)">✔</button>
+                    <button class="toggle-btn present-btn" onclick="togglePresent(this, '${id}-absent')">✔</button>
                     <div class="small-text">anwesend</div>
                 </div>
 
@@ -151,16 +147,32 @@
             }
         }
 
+        function togglePresent(button, counterId) {
+            button.classList.toggle("active");
+
+            // 🔥 WICHTIG: wenn anwesend gedrückt → reset Abwesend
+            if (button.classList.contains("active")) {
+                document.getElementById(counterId).innerText = "0";
+            }
+        }
+
         function toggleActive(button) {
             button.classList.toggle("active");
         }
 
         function resetCounters() {
-            if (confirm("Bist du sicher, dass du alles zurücksetzen möchtest?")) {
-                const counters = document.querySelectorAll(".counter span");
-                counters.forEach(counter => {
-                    counter.innerText = '0';
-                });
+            if (confirm("Alles wirklich zurücksetzen?")) {
+                document.querySelectorAll(".counter span").forEach(c => c.innerText = "0");
+                document.querySelectorAll(".toggle-btn").forEach(btn => btn.classList.remove("active"));
+            }
+        }
 
-                const toggles = document.querySelectorAll(".toggle-btn");
-                toggles.forEach(btn => {
+        function resetPresent() {
+            document.querySelectorAll(".present-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+        }
+    </script>
+
+</body>
+</html>
