@@ -5,50 +5,70 @@
     <title>AXXEN-CLAN ANWESENHEIT</title>
     <style>
         body {
-            background-color: gold;
+            background-color: white;
             font-family: Arial, sans-serif;
             text-align: center;
             color: red;
         }
+
         h1 {
             margin-top: 20px;
+            color: goldenrod;
         }
+
+        .reset-btn {
+            margin: 10px 0 20px 0;
+            padding: 10px 25px;
+            background-color: red;
+            color: gold;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         button {
             margin: 5px;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: none;
             background-color: red;
             color: gold;
             cursor: pointer;
             font-weight: bold;
         }
+
         .name-section {
             margin: 20px;
             padding: 20px;
-            border: 2px solid gold;
+            border: 2px solid goldenrod;
             display: inline-block;
             width: 300px;
+            border-radius: 10px;
         }
+
         .counter {
             margin: 5px;
+            color: black;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
+
     <h1>AXXEN-CLAN ANWESENHEIT</h1>
-    <button onclick="resetCounters()">Reset</button>
+
+    <!-- Reset jetzt DIREKT unter der Überschrift -->
+    <button class="reset-btn" onclick="resetCounters()">Reset</button>
 
     <div class="name-section">
         <h2>Max Mustermann</h2>
         <div class="counter">Anwesend: <span id="max-present">0</span></div>
         <div class="counter">Abwesend: <span id="max-absent">0</span></div>
+
         <button onclick="increment('max-present')">Anwesend +</button>
         <button onclick="decrement('max-present')">Anwesend -</button>
         <button onclick="increment('max-absent')">Abwesend +</button>
         <button onclick="decrement('max-absent')">Abwesend -</button>
     </div>
-
-    <!-- Weitere Namen kannst du hier genauso hinzufügen -->
 
     <script>
         function increment(counterId) {
@@ -72,5 +92,6 @@
             }
         }
     </script>
+
 </body>
 </html>
