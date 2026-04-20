@@ -17,7 +17,17 @@
         }
 
         .reset-btn {
-            margin: 10px 0 20px 0;
+            margin: 10px 10px 20px 10px;
+            padding: 10px 25px;
+            background-color: red;
+            color: #d4af37;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .reset-attendance-btn {
+            margin: 10px 10px 20px 0;
             padding: 10px 25px;
             background-color: red;
             color: #d4af37;
@@ -80,6 +90,7 @@
     <h1>AXXIN CLAN ANWESENHEIT</h1>
 
     <button class="reset-btn" onclick="resetCounters()">Reset</button>
+    <button class="reset-attendance-btn" onclick="resetAttendance()">Reset Anwesend</button>
 
     <div id="users-container"></div>
 
@@ -153,11 +164,3 @@
 
                 const toggles = document.querySelectorAll(".toggle-btn");
                 toggles.forEach(btn => {
-                    btn.classList.remove("active");
-                });
-            }
-        }
-    </script>
-
-</body>
-</html>
