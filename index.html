@@ -2,16 +2,24 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Anwesenheits-Tracker</title>
+    <title>Axxin Clan Anwesenheit</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h1 { text-align: center; }
-        .person { margin: 10px 0; }
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; }
+        .person { margin: 10px 0; padding: 10px; background-color: white; border: 1px solid #ddd; border-radius: 5px; }
         button { margin-left: 10px; }
+        #control { text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Anwesenheits-Tracker</h1>
+
+    <h1>Axxin Clan Anwesenheit</h1>
+    
+    <div id="control">
+        <button onclick="reset('present')">Reset Anwesenheit</button>
+        <button onclick="reset('missed')">Reset Fehltage</button>
+    </div>
+
     <div id="list"></div>
 
     <script>
@@ -55,7 +63,19 @@
             render();
         }
 
+        function reset(type) {
+            names.forEach(name => {
+                if (type === 'present') {
+                    data[name].present = 0;
+                } else if (type === 'missed') {
+                    data[name].missed = 0;
+                }
+            });
+            render();
+        }
+
         render();
     </script>
+
 </body>
 </html>
