@@ -27,7 +27,6 @@ button {
     padding:20px;
 }
 
-/* 📦 Standard Box */
 .name-section {
     background:white;
     border:2px solid #d4af37;
@@ -36,12 +35,7 @@ button {
     position:relative;
 }
 
-/* ⚠️ Warn (2/3) */
-.warn {
-    border:2px solid orange !important;
-}
-
-/* 🚫 Danger (3/3) */
+.warn { border:2px solid orange !important; }
 .danger {
     border:2px solid red !important;
     background:#ffe5e5;
@@ -86,6 +80,26 @@ button {
     right:15px;
 }
 
+/* ⋮ Menü */
+.menu {
+    position:fixed;
+    top:10px;
+    right:10px;
+}
+
+.menu-content {
+    display:none;
+    background:white;
+    border:1px solid #ccc;
+    padding:10px;
+}
+
+.menu-content button {
+    display:block;
+    width:100%;
+    margin:3px 0;
+}
+
 #addBtn { display:none; }
 </style>
 </head>
@@ -93,6 +107,15 @@ button {
 <body>
 
 <div id="app">
+
+<div class="menu">
+    <button onclick="toggleMenu()">⋮</button>
+    <div id="menuContent" class="menu-content">
+        <button onclick="setFilter('all')">Alle</button>
+        <button onclick="setFilter('warn')">Nur 2/3 ⚠️</button>
+        <button onclick="setFilter('danger')">Nur 3/3 🚫</button>
+    </div>
+</div>
 
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
@@ -126,7 +149,8 @@ if(pw !== "AXXIN123"){
 
 let editMode = false;
 let currentPage = 1;
-const perPage = 20;
+let filter = "all";
+const perPage = 25;
 
 let users = JSON.parse(localStorage.getItem("users")) || [
 "xXLouisXx","Tim_Tornado","Lehatriox","Tobel_on_Drip","CptBarkot",
@@ -142,15 +166,31 @@ const container = document.getElementById("users-container");
 
 function save(){ localStorage.setItem("users", JSON.stringify(users)); }
 
+function toggleMenu(){
+    let m = document.getElementById("menuContent");
+    m.style.display = m.style.display==="block" ? "none" : "block";
+}
+
+function setFilter(f){
+    filter = f;
+    currentPage = 1;
+    render();
+}
+
 function render(){
     container.innerHTML="";
 
+    let filtered = users;
+
+    if(filter === "warn") filtered = users.filter(u=>u.absent==2);
+    if(filter === "danger") filtered = users.filter(u=>u.absent==3);
+
     let start = (currentPage-1)*perPage;
     let end = start + perPage;
-    let pageUsers = users.slice(start,end);
+    let pageUsers = filtered.slice(start,end);
 
     pageUsers.forEach((u,i)=>{
-        let realIndex = start + i;
+        let realIndex = users.indexOf(u);
 
         let statusClass = "";
         if(u.absent == 2) statusClass = "warn";
@@ -184,14 +224,12 @@ function render(){
     });
 
     document.getElementById("pageInfo").innerText =
-        `Seite ${currentPage} von ${Math.ceil(users.length/perPage)}`;
+        `Seite ${currentPage} von ${Math.max(1, Math.ceil(filtered.length/perPage))}`;
 }
 
 function nextPage(){
-    if(currentPage < Math.ceil(users.length/perPage)){
-        currentPage++;
-        render();
-    }
+    currentPage++;
+    render();
 }
 
 function prevPage(){
