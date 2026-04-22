@@ -18,7 +18,6 @@ button {
     cursor:pointer;
 }
 
-/* Layout */
 #users-container {
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -34,11 +33,9 @@ padding:15px;
 position:relative;
 }
 
-/* Warnsystem */
 .warn { border:2px solid orange !important; }
 .danger { border:2px solid red !important; background:#ffe5e5; }
 
-/* Buttons */
 .absent-btn { display:block; width:80%; margin:4px auto; }
 
 .present-btn,.excuse-btn {
@@ -53,7 +50,6 @@ background:green;
 color:white;
 }
 
-/* Delete */
 .delete-btn {
 position:absolute;
 top:5px; right:5px;
@@ -62,7 +58,6 @@ display:none;
 }
 .edit-mode .delete-btn { display:block; }
 
-/* Bottom */
 .bottom-bar {
 position:fixed;
 bottom:10px;
@@ -73,14 +68,12 @@ justify-content:center;
 gap:10px;
 }
 
-/* Pagination */
 .pagination {
 position:fixed;
 bottom:10px;
 right:10px;
 }
 
-/* Filter Menü */
 .filter-menu {
 display:none;
 position:absolute;
@@ -139,9 +132,9 @@ document.getElementById("app").style.display = "block";
 let editMode = false;
 let currentPage = 1;
 let filter = "all";
-const perPage = 25;
+const perPage = 30;
 
-/* 👥 BASIS NAMEN */
+/* Namen */
 let baseNames = [
 "xXLouisXx","Tim_Tornado","Lehatriox","Tobel_on_Drip","CptBarkot",
 "10Monk3y","jarandos991","BobblyGHG","Risikloser","Mahmoud1259",
@@ -152,7 +145,6 @@ let baseNames = [
 "VortexSlay","Boguisb","MattisKing","Thorgend7","IrOnAndy"
 ];
 
-/* 💾 LOAD */
 let stored = JSON.parse(localStorage.getItem("users"));
 let users = stored || baseNames.map(n => ({name:n,absent:0,present:false,excuse:false}));
 
@@ -160,7 +152,6 @@ const container = document.getElementById("users-container");
 
 function save(){ localStorage.setItem("users", JSON.stringify(users)); }
 
-/* Filter Menü */
 function toggleFilter(){
 let m=document.getElementById("filterMenu");
 m.style.display=m.style.display==="block"?"none":"block";
@@ -172,7 +163,6 @@ currentPage=1;
 render();
 }
 
-/* Render */
 function render(){
 container.innerHTML="";
 
@@ -183,7 +173,7 @@ if(filter==="danger") filtered=users.filter(u=>u.absent==3);
 let start=(currentPage-1)*perPage;
 let pageUsers=filtered.slice(start,start+perPage);
 
-pageUsers.forEach((u,i)=>{
+pageUsers.forEach((u)=>{
 let index=users.indexOf(u);
 
 let cls=u.absent==2?"warn":u.absent==3?"danger":"";
@@ -209,18 +199,27 @@ container.innerHTML+=`
 </div>`;
 });
 
-pageInfo.innerText=`Seite ${currentPage} von ${Math.max(1,Math.ceil(filtered.length/perPage))}`;
+document.getElementById("pageInfo").innerText =
+`Seite ${currentPage} von ${Math.max(1,Math.ceil(filtered.length/perPage))}`;
 }
 
-/* Navigation */
+/* FIXED Pagination */
 function nextPage(){
-if(currentPage < Math.ceil(users.length/perPage)){
-currentPage++; render();
+let filtered=users;
+if(filter==="warn") filtered=users.filter(u=>u.absent==2);
+if(filter==="danger") filtered=users.filter(u=>u.absent==3);
+
+if(currentPage < Math.ceil(filtered.length/perPage)){
+currentPage++;
+render();
 }
 }
 
 function prevPage(){
-if(currentPage>1){ currentPage--; render(); }
+if(currentPage>1){
+currentPage--;
+render();
+}
 }
 
 /* Edit */
