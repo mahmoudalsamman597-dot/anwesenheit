@@ -73,6 +73,7 @@ bottom:10px;
 right:10px;
 }
 
+/* Filter */
 .filter-menu {
 display:none;
 position:absolute;
@@ -85,8 +86,6 @@ padding:5px;
 </head>
 
 <body>
-
-<div id="app">
 
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
@@ -107,7 +106,7 @@ padding:5px;
 <button onclick="toggleEdit()">Bearbeiten</button>
 
 <div style="position:relative;">
-<button onclick="toggleFilter()">⋮ Filter</button>
+<button onclick="toggleFilter()">Filter ⋮</button>
 <div id="filterMenu" class="filter-menu">
 <button onclick="setFilter('all')">Alle</button>
 <button onclick="setFilter('warn')">2/3 ⚠️</button>
@@ -118,14 +117,13 @@ padding:5px;
 <button id="addBtn" onclick="addUser()">➕</button>
 </div>
 
-</div>
-
 <script>
 let editMode = false;
 let currentPage = 1;
 let filter = "all";
-const perPage = 30;
+const perPage = 28;
 
+/* Namen */
 let baseNames = [
 "xXLouisXx","Tim_Tornado","Lehatriox","Tobel_on_Drip","CptBarkot",
 "10Monk3y","jarandos991","BobblyGHG","Risikloser","Mahmoud1259",
@@ -143,9 +141,10 @@ const container = document.getElementById("users-container");
 
 function save(){ localStorage.setItem("users", JSON.stringify(users)); }
 
+/* Filter */
 function toggleFilter(){
 let m=document.getElementById("filterMenu");
-m.style.display=m.style.display==="block"?"none":"block";
+m.style.display = m.style.display==="block"?"none":"block";
 }
 
 function setFilter(f){
@@ -154,21 +153,22 @@ currentPage=1;
 render();
 }
 
+/* Render */
 function render(){
 container.innerHTML="";
 
-let filtered=users;
-if(filter==="warn") filtered=users.filter(u=>u.absent==2);
-if(filter==="danger") filtered=users.filter(u=>u.absent==3);
+let filtered = users;
+if(filter==="warn") filtered = users.filter(u=>u.absent==2);
+if(filter==="danger") filtered = users.filter(u=>u.absent==3);
 
 let start=(currentPage-1)*perPage;
 let pageUsers=filtered.slice(start,start+perPage);
 
-pageUsers.forEach((u)=>{
-let index=users.indexOf(u);
+pageUsers.forEach(u=>{
+let index = users.indexOf(u);
 
-let cls=u.absent==2?"warn":u.absent==3?"danger":"";
-let sym=u.absent==2?"⚠️":u.absent==3?"🚫":"";
+let cls = u.absent==2?"warn":u.absent==3?"danger":"";
+let sym = u.absent==2?"⚠️":u.absent==3?"🚫":"";
 
 container.innerHTML+=`
 <div class="name-section ${cls}">
@@ -194,10 +194,11 @@ document.getElementById("pageInfo").innerText =
 `Seite ${currentPage} von ${Math.max(1,Math.ceil(filtered.length/perPage))}`;
 }
 
+/* FIXED Pagination */
 function nextPage(){
-let filtered=users;
-if(filter==="warn") filtered=users.filter(u=>u.absent==2);
-if(filter==="danger") filtered=users.filter(u=>u.absent==3);
+let filtered = users;
+if(filter==="warn") filtered = users.filter(u=>u.absent==2);
+if(filter==="danger") filtered = users.filter(u=>u.absent==3);
 
 if(currentPage < Math.ceil(filtered.length/perPage)){
 currentPage++;
@@ -212,6 +213,7 @@ render();
 }
 }
 
+/* Edit */
 function toggleEdit(){
 editMode=!editMode;
 document.body.classList.toggle("edit-mode");
@@ -238,6 +240,7 @@ let n=prompt("Neuer Name:", users[i].name);
 if(n){ users[i].name=n; save(); render(); }
 }
 
+/* Actions */
 function inc(i){ if(users[i].absent<3) users[i].absent++; save(); render(); }
 function dec(i){ if(users[i].absent>0) users[i].absent--; save(); render(); }
 
