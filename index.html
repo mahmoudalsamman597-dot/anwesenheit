@@ -67,10 +67,25 @@ justify-content:center;
 gap:10px;
 }
 
+/* 🆕 Pagination */
 .pagination {
 position:fixed;
 bottom:10px;
 right:10px;
+display:flex;
+gap:5px;
+}
+
+.page-btn {
+padding:5px 10px;
+background:white;
+border:1px solid #d4af37;
+cursor:pointer;
+}
+
+.page-btn.active {
+background:#d4af37;
+color:black;
 }
 
 /* Filter */
@@ -96,11 +111,8 @@ padding:5px;
 
 <div id="users-container"></div>
 
-<div class="pagination">
-<button onclick="prevPage()">⬅</button>
-<span id="pageInfo"></span>
-<button onclick="nextPage()">➡</button>
-</div>
+<!-- 🆕 Neue Pagination -->
+<div id="pagination" class="pagination"></div>
 
 <div class="bottom-bar">
 <button onclick="toggleEdit()">Bearbeiten</button>
@@ -153,7 +165,7 @@ currentPage=1;
 render();
 }
 
-/* Render */
+/* 🧠 Render */
 function render(){
 container.innerHTML="";
 
@@ -190,27 +202,25 @@ container.innerHTML+=`
 </div>`;
 });
 
-document.getElementById("pageInfo").innerText =
-`Seite ${currentPage} von ${Math.max(1,Math.ceil(filtered.length/perPage))}`;
+/* 🆕 Pagination Render */
+renderPagination(filtered.length);
 }
 
-/* FIXED Pagination */
-function nextPage(){
-let filtered = users;
-if(filter==="warn") filtered = users.filter(u=>u.absent==2);
-if(filter==="danger") filtered = users.filter(u=>u.absent==3);
+/* 🆕 Pagination Logik */
+function renderPagination(totalItems){
+let pages = Math.ceil(totalItems / perPage);
+let html = "";
 
-if(currentPage < Math.ceil(filtered.length/perPage)){
-currentPage++;
+for(let i=1; i<=pages; i++){
+html += `<button class="page-btn ${i===currentPage?"active":""}" onclick="goToPage(${i})">${i}</button>`;
+}
+
+document.getElementById("pagination").innerHTML = html;
+}
+
+function goToPage(page){
+currentPage = page;
 render();
-}
-}
-
-function prevPage(){
-if(currentPage>1){
-currentPage--;
-render();
-}
 }
 
 /* Edit */
