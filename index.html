@@ -5,96 +5,88 @@
 <title>AXXIN CLAN ANWESENHEIT</title>
 
 <style>
-body {
-    background: #f5f5f5;
-    font-family: Arial;
-    text-align: center;
-}
+body { background:#f5f5f5; font-family:Arial; text-align:center; }
+#app { display:none; }
+h1 { color:#d4af37; }
 
-#app { display: none; }
-
-h1 { color: #d4af37; }
-
-/* 🔴 Standard Buttons (JETZT GOLD) */
 button {
-    background: red;
-    color: #d4af37;
-    border: none;
-    margin: 4px;
-    padding: 6px 12px;
-    cursor: pointer;
+    background:red;
+    color:#d4af37;
+    border:none;
+    margin:4px;
+    padding:6px 12px;
+    cursor:pointer;
 }
 
-/* 🔴 Top Buttons */
-.top-buttons button {
-    padding: 8px 16px;
-}
+.top-buttons button { padding:8px 16px; }
 
-/* 📦 Grid */
 #users-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    padding: 20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    padding:20px;
 }
 
-/* 📦 Box */
+/* 📦 Standard Box */
 .name-section {
-    background: white;
-    border: 2px solid #d4af37;
-    border-radius: 10px;
-    padding: 15px;
-    position: relative;
+    background:white;
+    border:2px solid #d4af37;
+    border-radius:10px;
+    padding:15px;
+    position:relative;
 }
 
-.name-section h2 {
-    color: red;
-    cursor: pointer;
+/* ⚠️ Warn (2/3) */
+.warn {
+    border:2px solid orange !important;
 }
 
-/* ❌ Delete */
+/* 🚫 Danger (3/3) */
+.danger {
+    border:2px solid red !important;
+    background:#ffe5e5;
+}
+
+.name-section h2 { color:red; cursor:pointer; }
+
 .delete-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: red;
-    color: white;
-    border: none;
-    display: none;
+    position:absolute;
+    top:5px; right:5px;
+    background:red; color:white;
+    display:none;
 }
 
-.edit-mode .delete-btn {
-    display: block;
-}
+.edit-mode .delete-btn { display:block; }
 
-/* 🔴 Abwesend Buttons (kleiner + kompakt) */
 .absent-btn {
-    display: block;
-    width: 80%;
-    margin: 4px auto;
-    padding: 5px 10px;
+    display:block;
+    width:80%;
+    margin:4px auto;
+    padding:5px 10px;
 }
 
-/* ⚫ Anwesend / Entschuldigt (schwarz) */
 .present-btn,
 .excuse-btn {
-    background: transparent;
-    color: black;
-    border: 1px solid black;
-    padding: 6px 12px;
-    font-size: 13px;
-    margin-top: 5px;
+    background:transparent;
+    color:black;
+    border:1px solid black;
+    padding:6px 12px;
 }
 
 .present-btn.active,
 .excuse-btn.active {
-    background: green;
-    color: white;
-    border: 1px solid green;
+    background:green;
+    color:white;
 }
 
-.bottom-buttons { margin: 20px; }
-#addBtn { display: none; }
+/* 📄 Pagination */
+.pagination {
+    position:fixed;
+    bottom:15px;
+    right:15px;
+}
+
+#addBtn { display:none; }
 </style>
 </head>
 
@@ -105,15 +97,21 @@ button {
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
 <div class="top-buttons">
-    <button onclick="resetAll()">Reset</button>
-    <button onclick="resetPresent()">Reset Anwesend</button>
+<button onclick="resetAll()">Reset</button>
+<button onclick="resetPresent()">Reset Anwesend</button>
 </div>
 
 <div id="users-container"></div>
 
-<div class="bottom-buttons">
-    <button onclick="toggleEdit()">Bearbeiten</button>
-    <button id="addBtn" onclick="addUser()">➕</button>
+<div class="pagination">
+<button onclick="prevPage()">⬅</button>
+<span id="pageInfo"></span>
+<button onclick="nextPage()">➡</button>
+</div>
+
+<div>
+<button onclick="toggleEdit()">Bearbeiten</button>
+<button id="addBtn" onclick="addUser()">➕</button>
 </div>
 
 </div>
@@ -127,13 +125,17 @@ if(pw !== "AXXIN123"){
 }
 
 let editMode = false;
+let currentPage = 1;
+const perPage = 20;
 
 let users = JSON.parse(localStorage.getItem("users")) || [
-"Bobby","Risikoloser","Mahmoud","loxy","sgfinley","memzter","chxrs",
-"TyroTV","Bekkermann","Eyupopro","davidimglas","SpeedyHg","I0Monkey",
-"Schnitzel","lordemea","Dupz","Ayman","Ibrahimovic","Tobi_on_drip",
-"Onke_vali","alphaluca","Nvklas","Kaktus","Louis","Tim Tornado",
-"Matrixx","NafSlayer","Ayman","ALPHALUCA","CptKinkot"
+"xXLouisXx","Tim_Tornado","Lehatriox","Tobel_on_Drip","CptBarkot",
+"10Monk3y","jarandos991","BobblyGHG","Risikloser","Mahmoud1259",
+"Zr_Loxy","saerfinley","menzer","Chrixsz2016","0TyroTV","beckermann",
+"eyuporo","davidimglas","SPEEDYHG","nafsplayer","Schnitzel341",
+"Lord_Emea","ALMN","Ibrahimovic_Goat","Onkel_Vali","AlphaLuxa",
+"KollegeRaktus","sxite","Sapierre","Leonfxlx","VortexSlay",
+"Boguisb","MattisKing","Thorgend7","IrOnAndy"
 ].map(n => ({name:n,absent:0,present:false,excuse:false}));
 
 const container = document.getElementById("users-container");
@@ -142,30 +144,61 @@ function save(){ localStorage.setItem("users", JSON.stringify(users)); }
 
 function render(){
     container.innerHTML="";
-    users.forEach((u,i)=>{
+
+    let start = (currentPage-1)*perPage;
+    let end = start + perPage;
+    let pageUsers = users.slice(start,end);
+
+    pageUsers.forEach((u,i)=>{
+        let realIndex = start + i;
+
+        let statusClass = "";
+        if(u.absent == 2) statusClass = "warn";
+        if(u.absent == 3) statusClass = "danger";
+
+        let symbol = "";
+        if(u.absent == 2) symbol = "⚠️";
+        if(u.absent == 3) symbol = "🚫";
+
         container.innerHTML += `
-        <div class="name-section">
-            <button class="delete-btn" onclick="deleteUser(${i})">❌</button>
+        <div class="name-section ${statusClass}">
+            <button class="delete-btn" onclick="deleteUser(${realIndex})">❌</button>
 
-            <h2 onclick="editName(${i})">${u.name}</h2>
+            <h2 onclick="editName(${realIndex})">${u.name}</h2>
 
-            <div>Abwesend: ${u.absent} / 3</div>
+            <div>Abwesend: ${u.absent} / 3 ${symbol}</div>
 
-            <button class="absent-btn" onclick="inc(${i})">Abwesend +</button>
-            <button class="absent-btn" onclick="dec(${i})">Abwesend -</button>
+            <button class="absent-btn" onclick="inc(${realIndex})">Abwesend +</button>
+            <button class="absent-btn" onclick="dec(${realIndex})">Abwesend -</button>
 
-            <div style="margin-top:10px;">
-                <div style="font-size:13px;">Anwesend</div>
-                <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${i})">✔</button>
+            <div>
+                <div>Anwesend</div>
+                <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${realIndex})">✔</button>
             </div>
 
-            <div style="margin-top:10px;">
-                <div style="font-size:13px;">Entschuldigt</div>
-                <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${i})">✔</button>
+            <div>
+                <div>Entschuldigt</div>
+                <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${realIndex})">✔</button>
             </div>
-
         </div>`;
     });
+
+    document.getElementById("pageInfo").innerText =
+        `Seite ${currentPage} von ${Math.ceil(users.length/perPage)}`;
+}
+
+function nextPage(){
+    if(currentPage < Math.ceil(users.length/perPage)){
+        currentPage++;
+        render();
+    }
+}
+
+function prevPage(){
+    if(currentPage > 1){
+        currentPage--;
+        render();
+    }
 }
 
 function toggleEdit(){
@@ -211,9 +244,7 @@ function toggleExcuse(i){
 function resetAll(){
     if(confirm("Alles zurücksetzen?")){
         users.forEach(u=>{
-            u.absent=0;
-            u.present=false;
-            u.excuse=false;
+            u.absent=0; u.present=false; u.excuse=false;
         });
         save(); render();
     }
