@@ -18,89 +18,77 @@ button {
     cursor:pointer;
 }
 
-.top-buttons button { padding:8px 16px; }
-
+/* Layout */
 #users-container {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-    padding:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+padding:20px;
 }
 
 .name-section {
-    background:white;
-    border:2px solid #d4af37;
-    border-radius:10px;
-    padding:15px;
-    position:relative;
+background:white;
+border:2px solid #d4af37;
+border-radius:10px;
+padding:15px;
+position:relative;
 }
 
+/* Warnsystem */
 .warn { border:2px solid orange !important; }
-.danger {
-    border:2px solid red !important;
-    background:#ffe5e5;
+.danger { border:2px solid red !important; background:#ffe5e5; }
+
+/* Buttons */
+.absent-btn { display:block; width:80%; margin:4px auto; }
+
+.present-btn,.excuse-btn {
+background:transparent;
+color:black;
+border:1px solid black;
+padding:6px 12px;
 }
 
-.name-section h2 { color:red; cursor:pointer; }
+.present-btn.active,.excuse-btn.active {
+background:green;
+color:white;
+}
 
+/* Delete */
 .delete-btn {
-    position:absolute;
-    top:5px; right:5px;
-    background:red; color:white;
-    display:none;
+position:absolute;
+top:5px; right:5px;
+background:red; color:white;
+display:none;
 }
-
 .edit-mode .delete-btn { display:block; }
 
-.absent-btn {
-    display:block;
-    width:80%;
-    margin:4px auto;
-    padding:5px 10px;
+/* Bottom */
+.bottom-bar {
+position:fixed;
+bottom:10px;
+left:0;
+right:0;
+display:flex;
+justify-content:center;
+gap:10px;
 }
 
-.present-btn,
-.excuse-btn {
-    background:transparent;
-    color:black;
-    border:1px solid black;
-    padding:6px 12px;
-}
-
-.present-btn.active,
-.excuse-btn.active {
-    background:green;
-    color:white;
-}
-
-/* 📄 Pagination */
+/* Pagination */
 .pagination {
-    position:fixed;
-    bottom:15px;
-    right:15px;
+position:fixed;
+bottom:10px;
+right:10px;
 }
 
-/* ⋮ Menü */
-.menu {
-    position:fixed;
-    top:10px;
-    right:10px;
+/* Filter Menü */
+.filter-menu {
+display:none;
+position:absolute;
+bottom:40px;
+background:white;
+border:1px solid #ccc;
+padding:5px;
 }
-
-.menu-content {
-    display:none;
-    background:white;
-    border:1px solid #ccc;
-    padding:10px;
-}
-
-.menu-content button {
-    display:block;
-    width:100%;
-    margin:3px 0;
-}
-
-#addBtn { display:none; }
 </style>
 </head>
 
@@ -108,18 +96,9 @@ button {
 
 <div id="app">
 
-<div class="menu">
-    <button onclick="toggleMenu()">⋮</button>
-    <div id="menuContent" class="menu-content">
-        <button onclick="setFilter('all')">Alle</button>
-        <button onclick="setFilter('warn')">Nur 2/3 ⚠️</button>
-        <button onclick="setFilter('danger')">Nur 3/3 🚫</button>
-    </div>
-</div>
-
 <h1>AXXIN CLAN ANWESENHEIT</h1>
 
-<div class="top-buttons">
+<div>
 <button onclick="resetAll()">Reset</button>
 <button onclick="resetPresent()">Reset Anwesend</button>
 </div>
@@ -132,8 +111,18 @@ button {
 <button onclick="nextPage()">➡</button>
 </div>
 
-<div>
+<div class="bottom-bar">
 <button onclick="toggleEdit()">Bearbeiten</button>
+
+<div style="position:relative;">
+<button onclick="toggleFilter()">⋮ Filter</button>
+<div id="filterMenu" class="filter-menu">
+<button onclick="setFilter('all')">Alle</button>
+<button onclick="setFilter('warn')">2/3 ⚠️</button>
+<button onclick="setFilter('danger')">3/3 🚫</button>
+</div>
+</div>
+
 <button id="addBtn" onclick="addUser()">➕</button>
 </div>
 
@@ -142,9 +131,9 @@ button {
 <script>
 let pw = prompt("Passwort eingeben:");
 if(pw !== "AXXIN123"){
-    document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
+document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
 } else {
-    document.getElementById("app").style.display = "block";
+document.getElementById("app").style.display = "block";
 }
 
 let editMode = false;
@@ -152,145 +141,142 @@ let currentPage = 1;
 let filter = "all";
 const perPage = 25;
 
-let users = JSON.parse(localStorage.getItem("users")) || [
+/* 👥 BASIS NAMEN */
+let baseNames = [
 "xXLouisXx","Tim_Tornado","Lehatriox","Tobel_on_Drip","CptBarkot",
 "10Monk3y","jarandos991","BobblyGHG","Risikloser","Mahmoud1259",
-"Zr_Loxy","saerfinley","menzer","Chrixsz2016","0TyroTV","beckermann",
-"eyuporo","davidimglas","SPEEDYHG","nafsplayer","Schnitzel341",
-"Lord_Emea","ALMN","Ibrahimovic_Goat","Onkel_Vali","AlphaLuxa",
-"KollegeRaktus","sxite","Sapierre","Leonfxlx","VortexSlay",
-"Boguisb","MattisKing","Thorgend7","IrOnAndy"
-].map(n => ({name:n,absent:0,present:false,excuse:false}));
+"Zr_Loxy","saerfinley","menzer","Chrixsz2016","0TyroTV",
+"beckermann","eyuporo","davidimglas","SPEEDYHG","nafsplayer",
+"Schnitzel341","Lord_Emea","ALMN","Ibrahimovic_Goat","Onkel_Vali",
+"AlphaLuxa","KollegeRaktus","sxite","Sapierre","Leonfxlx",
+"VortexSlay","Boguisb","MattisKing","Thorgend7","IrOnAndy"
+];
+
+/* 💾 LOAD */
+let stored = JSON.parse(localStorage.getItem("users"));
+let users = stored || baseNames.map(n => ({name:n,absent:0,present:false,excuse:false}));
 
 const container = document.getElementById("users-container");
 
 function save(){ localStorage.setItem("users", JSON.stringify(users)); }
 
-function toggleMenu(){
-    let m = document.getElementById("menuContent");
-    m.style.display = m.style.display==="block" ? "none" : "block";
+/* Filter Menü */
+function toggleFilter(){
+let m=document.getElementById("filterMenu");
+m.style.display=m.style.display==="block"?"none":"block";
 }
 
 function setFilter(f){
-    filter = f;
-    currentPage = 1;
-    render();
+filter=f;
+currentPage=1;
+render();
 }
 
+/* Render */
 function render(){
-    container.innerHTML="";
+container.innerHTML="";
 
-    let filtered = users;
+let filtered=users;
+if(filter==="warn") filtered=users.filter(u=>u.absent==2);
+if(filter==="danger") filtered=users.filter(u=>u.absent==3);
 
-    if(filter === "warn") filtered = users.filter(u=>u.absent==2);
-    if(filter === "danger") filtered = users.filter(u=>u.absent==3);
+let start=(currentPage-1)*perPage;
+let pageUsers=filtered.slice(start,start+perPage);
 
-    let start = (currentPage-1)*perPage;
-    let end = start + perPage;
-    let pageUsers = filtered.slice(start,end);
+pageUsers.forEach((u,i)=>{
+let index=users.indexOf(u);
 
-    pageUsers.forEach((u,i)=>{
-        let realIndex = users.indexOf(u);
+let cls=u.absent==2?"warn":u.absent==3?"danger":"";
+let sym=u.absent==2?"⚠️":u.absent==3?"🚫":"";
 
-        let statusClass = "";
-        if(u.absent == 2) statusClass = "warn";
-        if(u.absent == 3) statusClass = "danger";
+container.innerHTML+=`
+<div class="name-section ${cls}">
+<button class="delete-btn" onclick="deleteUser(${index})">❌</button>
 
-        let symbol = "";
-        if(u.absent == 2) symbol = "⚠️";
-        if(u.absent == 3) symbol = "🚫";
+<h2 onclick="editName(${index})">${u.name}</h2>
 
-        container.innerHTML += `
-        <div class="name-section ${statusClass}">
-            <button class="delete-btn" onclick="deleteUser(${realIndex})">❌</button>
+<div>Abwesend: ${u.absent} / 3 ${sym}</div>
 
-            <h2 onclick="editName(${realIndex})">${u.name}</h2>
+<button class="absent-btn" onclick="inc(${index})">Abwesend +</button>
+<button class="absent-btn" onclick="dec(${index})">Abwesend -</button>
 
-            <div>Abwesend: ${u.absent} / 3 ${symbol}</div>
+<div>Anwesend</div>
+<button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${index})">✔</button>
 
-            <button class="absent-btn" onclick="inc(${realIndex})">Abwesend +</button>
-            <button class="absent-btn" onclick="dec(${realIndex})">Abwesend -</button>
+<div>Entschuldigt</div>
+<button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${index})">✔</button>
 
-            <div>
-                <div>Anwesend</div>
-                <button class="present-btn ${u.present?"active":""}" onclick="togglePresent(${realIndex})">✔</button>
-            </div>
+</div>`;
+});
 
-            <div>
-                <div>Entschuldigt</div>
-                <button class="excuse-btn ${u.excuse?"active":""}" onclick="toggleExcuse(${realIndex})">✔</button>
-            </div>
-        </div>`;
-    });
-
-    document.getElementById("pageInfo").innerText =
-        `Seite ${currentPage} von ${Math.max(1, Math.ceil(filtered.length/perPage))}`;
+pageInfo.innerText=`Seite ${currentPage} von ${Math.max(1,Math.ceil(filtered.length/perPage))}`;
 }
 
+/* Navigation */
 function nextPage(){
-    currentPage++;
-    render();
+if(currentPage < Math.ceil(users.length/perPage)){
+currentPage++; render();
+}
 }
 
 function prevPage(){
-    if(currentPage > 1){
-        currentPage--;
-        render();
-    }
+if(currentPage>1){ currentPage--; render(); }
 }
 
+/* Edit */
 function toggleEdit(){
-    editMode=!editMode;
-    document.body.classList.toggle("edit-mode");
-    addBtn.style.display=editMode?"inline":"none";
+editMode=!editMode;
+document.body.classList.toggle("edit-mode");
+addBtn.style.display=editMode?"inline":"none";
 }
 
 function addUser(){
-    let n=prompt("Name:");
-    if(!n) return;
-    users.push({name:n,absent:0,present:false,excuse:false});
-    save(); render();
+let n=prompt("Name:");
+if(!n) return;
+users.push({name:n,absent:0,present:false,excuse:false});
+save(); render();
 }
 
 function deleteUser(i){
-    if(confirm("Wirklich löschen?")){
-        users.splice(i,1);
-        save(); render();
-    }
+if(confirm("Löschen?")){
+users.splice(i,1);
+save(); render();
+}
 }
 
 function editName(i){
-    if(!editMode) return;
-    let n=prompt("Neuer Name:", users[i].name);
-    if(n){ users[i].name=n; save(); render(); }
+if(!editMode) return;
+let n=prompt("Neuer Name:", users[i].name);
+if(n){ users[i].name=n; save(); render(); }
 }
 
+/* Actions */
 function inc(i){ if(users[i].absent<3) users[i].absent++; save(); render(); }
 function dec(i){ if(users[i].absent>0) users[i].absent--; save(); render(); }
 
 function togglePresent(i){
-    users[i].present=!users[i].present;
-    if(users[i].present) users[i].absent=0;
-    save(); render();
+users[i].present=!users[i].present;
+if(users[i].present) users[i].absent=0;
+save(); render();
 }
 
 function toggleExcuse(i){
-    users[i].excuse=!users[i].excuse;
-    save(); render();
+users[i].excuse=!users[i].excuse;
+save(); render();
 }
 
 function resetAll(){
-    if(confirm("Alles zurücksetzen?")){
-        users.forEach(u=>{
-            u.absent=0; u.present=false; u.excuse=false;
-        });
-        save(); render();
-    }
+if(confirm("Alles zurücksetzen?")){
+users.forEach(u=>{
+u.absent=0; u.present=false; u.excuse=false;
+});
+save(); render();
+}
 }
 
 function resetPresent(){
-    users.forEach(u=>u.present=false);
-    save(); render();
+users.forEach(u=>u.present=false);
+save(); render();
 }
 
 render();
