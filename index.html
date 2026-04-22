@@ -57,6 +57,7 @@ display:none;
 }
 .edit-mode .delete-btn { display:block; }
 
+/* 🔥 Bottom Bar */
 .bottom-bar {
 position:fixed;
 bottom:10px;
@@ -65,15 +66,17 @@ right:0;
 display:flex;
 justify-content:center;
 gap:10px;
+z-index:10;
 }
 
-/* 🆕 Pagination */
+/* 🔥 FIXED Pagination */
 .pagination {
 position:fixed;
-bottom:10px;
+bottom:60px; /* 👈 höher gesetzt */
 right:10px;
 display:flex;
 gap:5px;
+z-index:9999; /* 👈 wichtigste Fix */
 }
 
 .page-btn {
@@ -111,7 +114,7 @@ padding:5px;
 
 <div id="users-container"></div>
 
-<!-- 🆕 Neue Pagination -->
+<!-- 🔢 Pagination -->
 <div id="pagination" class="pagination"></div>
 
 <div class="bottom-bar">
@@ -165,7 +168,7 @@ currentPage=1;
 render();
 }
 
-/* 🧠 Render */
+/* Render */
 function render(){
 container.innerHTML="";
 
@@ -202,11 +205,10 @@ container.innerHTML+=`
 </div>`;
 });
 
-/* 🆕 Pagination Render */
 renderPagination(filtered.length);
 }
 
-/* 🆕 Pagination Logik */
+/* Pagination */
 function renderPagination(totalItems){
 let pages = Math.ceil(totalItems / perPage);
 let html = "";
